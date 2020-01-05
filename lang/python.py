@@ -1,6 +1,9 @@
 from talon.voice import Context, Key
+from ..utils import is_filetype
 
-context = Context("python")
+FILETYPES = (".py")
+
+context = Context("python", func=is_filetype(FILETYPES))
 
 context.keymap(
     {

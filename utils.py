@@ -3,6 +3,7 @@ import talon.clip as clip
 from talon import resource
 from .bundle_groups import FILETYPE_SENSITIVE_BUNDLES
 import json
+import os
 
 # overrides are used as a last resort to override the output. Some uses:
 # - frequently misheard words
@@ -35,7 +36,7 @@ def join_words(words, sep=" "):
 
 
 def parse_words(m):
-    return list(map(parse_word, m.dgndictation[0]._words))
+    return list(map(parse_word, m.dgndictation.words))
 
 
 def insert(s):
@@ -57,7 +58,7 @@ def word(m):
 
 
 def extract_word(m):
-    return join_words(list(map(parse_word, m.dgnwords[0]._words)))
+    return join_words(list(map(parse_word, m.dgnwords.words)))
 
 
 # FIX ME
@@ -90,7 +91,7 @@ def optional_numerals():
 
 
 def text_to_number(m):
-    tmp = [str(s).lower() for s in m._words]
+    tmp = [str(s).lower() for s in m]
     words = [parse_word(word) for word in tmp]
 
     result = 0
@@ -146,21 +147,18 @@ def parse_words_as_integer(words):
     return int("".join(normalized_number_values))
 
 
-def is_in_bundles(bundles):
+def is_in_bundles(bundles): 
     return lambda app, win: any(b in app.bundle for b in bundles)
-
 
 def is_filetype(extensions=()):
     def matcher(app, win):
-        if is_in_bundles(FILETYPE_SENSITIVE_BUNDLES)(app, win):
-            if any(ext in win.title for ext in extensions):
+        activeType = os.path.splitext(win.title)[-1]
+        for ext in extensions:
+            if ext in activeType:
                 return True
-            else:
-                return False
-        return True
-
+        return False
+        
     return matcher
-
 
 def preserve_clipboard(fn):
     def wrapped_function(*args, **kwargs):

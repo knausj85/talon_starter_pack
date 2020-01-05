@@ -1,3 +1,4 @@
+from talon import app
 from talon.voice import Context, Str, press
 import string
 
@@ -6,7 +7,7 @@ alpha_alt = "air bat cap drum each fine gust harp sit jury crunch look made near
 f_keys = {f"F {i}": f"f{i}" for i in range(1, 13)}
 # arrows are separated because 'up' has a high false positive rate
 arrows = ["left", "right", "up", "down"]
-simple_keys = ["tab", "escape", "enter", "space", "pageup", "pagedown"]
+simple_keys = ["tab", "escape", "enter", "space", "pageup", "pagedown", "home", "end"]
 alternate_keys = {"delete": "backspace", "forward delete": "delete"}
 symbols = {
     "back tick": "`",
@@ -29,15 +30,32 @@ symbols = {
     "equals": "=",
 }
 modifiers = {
-    "command": "cmd",
     "control": "ctrl",
     "shift": "shift",
     "alt": "alt",
-    "option": "alt",
 }
+if app.platform == "mac":
+    modifiers["command"] = "cmd"
+    modifiers["option"] = "alt"
+elif app.platform == "windows":
+    modifiers["windows"] = "win"
+    modifiers["super"] = "win"
+elif app.platform == "linux":
+    modifiers["super"] = "super"
 
 alphabet = dict(zip(alpha_alt, string.ascii_lowercase))
-digits = {str(i): str(i) for i in range(10)}
+digits = {
+    "zero":  "0",
+    "one":   "1",
+    "two":   "2",
+    "three": "3",
+    "four":  "4",
+    "five":  "5",
+    "six":   "6",
+    "seven": "7",
+    "eight": "8",
+    "nine":  "9",
+}
 simple_keys = {k: k for k in simple_keys}
 arrows = {k: k for k in arrows}
 keys = {}
@@ -59,13 +77,13 @@ def insert(s):
 
 def get_modifiers(m):
     try:
-        return [modifiers[mod] for mod in m["basic.modifiers"]]
+        return [modifiers[mod] for mod in m["modifiers_list"]]
     except KeyError:
         return []
 
 
 def get_keys(m):
-    groups = ["basic.keys", "basic.arrows", "basic.digits", "basic.alphabet"]
+    groups = ["keys_list", "arrows_list", "digits_list", "alphabet_list"]
     for group in groups:
         try:
             return [keymap[k] for k in m[group]]
@@ -77,6 +95,8 @@ def get_keys(m):
 def uppercase_letters(m):
     insert("".join(get_keys(m)).upper())
 
+def start(m):
+    press("super")
 
 def press_keys(m):
     mods = get_modifiers(m)
@@ -87,6 +107,8 @@ def press_keys(m):
     for k in keys:
         press(k)
 
+def kill(m):
+    press("alt-f4")
 
 ctx = Context("basic")
 ctx.keymap(
@@ -96,8 +118,11 @@ ctx.keymap(
         "{basic.modifiers}* {basic.digits}+": press_keys,
         "{basic.modifiers}* {basic.keys}+": press_keys,
         "(go | {basic.modifiers}+) {basic.arrows}+": press_keys,
+        "kill": kill,
+        "start": start,
     }
 )
+
 ctx.set_list("alphabet", alphabet.keys())
 ctx.set_list("arrows", arrows.keys())
 ctx.set_list("digits", digits.keys())
