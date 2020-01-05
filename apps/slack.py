@@ -1,7 +1,7 @@
 from talon.voice import Context, Key
 from ..utils import text
 
-ctx = Context("slack", bundle="com.tinyspeck.slackmacgap")
+ctx = Context("slack",exe='C:\\Users\\knausj\\AppData\\Local\\slack\\app-4.2.0\\slack.exe')
 
 keymap = {
     # Channel
