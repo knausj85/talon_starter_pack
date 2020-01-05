@@ -113,6 +113,7 @@ keymap.update(
         "next tab": Key("ctrl-tab"),
         "new tab": Key("ctrl-t"),
         "last tab": Key("ctrl-shift-tab"),
+        "close tab": Key("ctrl-w"),
         #"next space": Key("cmd-alt-ctrl-right"),
         #"last space": Key("cmd-alt-ctrl-left"),
         "zoom [in]": Key("ctrl-+"),
