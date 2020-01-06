@@ -65,7 +65,7 @@ keymap = {
     "smear <dgndictation>++ over": jump_to_eol_and(jump_to_nearly_end_of_line),
     # general
     # file
-    # "new": Key("cmd-n"),
+    "new": Key("ctrl-n"),
     "(save | safe)": Key("ctrl-s"),
     "close (file | tab)": Key("ctrl-w"),
     # selection
