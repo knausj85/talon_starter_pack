@@ -117,8 +117,8 @@ for i, w in enumerate(
 def parse_words_as_integer(m):
     number_list = []
     
-    #quick and dirty due to being a python number.
-    #join the string together, and stript out unneeded garbage
+    #quick and dirty due to being a python newbie.
+    #join the string together, and strip out unneeded garbage
     s = " ".join(m).replace("\\number", "").replace("over", "").lstrip().rstrip();
     
     splits = s.split(" ")
