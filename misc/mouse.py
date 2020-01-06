@@ -1,19 +1,24 @@
-# from https://github.com/talonvoice/examples
-# jsc added shift-click, command-click, and voice code compatibility
-
-# import eye
+# From https://github.com/talonvoice/examples
 import time
 from talon import ctrl, tap, ui
 from talon.voice import Context, Key
-
-# increase to enable smooth scrolling
-SCROLL_TOTAL_TIME = 0.0
+from talon_plugins import eye_mouse, eye_zoom_mouse
 
 ctx = Context("mouse")
 
+#history is used exclusively for drag currently.
 x, y = ctrl.mouse_pos()
 mouse_history = [(x, y, time.time())]
 force_move = None
+
+def toggle_zoom_mouse(m):
+    if eye_zoom_mouse.zoom_mouse.enabled:
+        try:
+            eye_zoom_mouse.zoom_mouse.disable()
+        except:
+            eye_zoom_mouse.zoom_mouse.enabled = False
+    else:
+        eye_zoom_mouse.zoom_mouse.enable()
 
 def on_move(typ, e):
     mouse_history.append((e.x, e.y, time.time()))
@@ -24,35 +29,39 @@ def on_move(typ, e):
 
 tap.register(tap.MMOVE, on_move)
 
-
 def click_pos(m):
     word = m[0]
     start = (word.start + min((word.end - word.start) / 2, 0.100)) / 1000.0
     diff, pos = min([(abs(start - pos[2]), pos) for pos in mouse_history])
     return pos[:2]
 
-
-def click(m, button=0, times=1):
-    ctrl.mouse_click(x, y, button=button, times=times, wait=16000)
-
-
+def click(m, button=0, times=1):        
+    do_clicks = eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_OVERLAY or not eye_zoom_mouse.zoom_mouse.enabled
+    call_on_pop = eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_IDLE
+    
+    #cancel zoom mouse if pending
+    if call_on_pop:
+        eye_zoom_mouse.zoom_mouse.on_pop(eye_zoom_mouse.zoom_mouse.state)
+    elif do_clicks:
+        for n in range(times):
+            ctrl.mouse_click(button=button)
+        
+        if eye_zoom_mouse.zoom_mouse.enabled:
+            eye_zoom_mouse.zoom_mouse.cancel()
+            
 def right_click(m):
     click(m, button=1)
 
-
 def dubclick(m):
-    click(m, button=0, times=2)
-
-
+    click(m, times=2)
+  
 def tripclick(m):
-    click(m, button=0, times=3)
-
+    click(m, times=3)
 
 def press_key_and_click(m, key, button=0, times=1):
     ctrl.key_press(key, down=True)
-    ctrl.mouse_click(x, y, button=button, times=times, wait=16000)
+    ctrl.mouse_click(button=button, times=times, wait=16000)
     ctrl.key_press(key, up=True)
-
 
 def mouse_scroll(amount):
     def scroll(m):
@@ -109,29 +118,34 @@ def control_shift_click(m, button=0, times=1):
     ctrl.mouse_click(x, y, button=button, times=times, wait=16000)
     ctrl.key_press("shift", ctrl=True, shift=True, up=True)
 
+ctx.keymap(
+    {
+        "debug overlay": lambda m: eye_mouse.debug_overlay.toggle(),
+        "control mouse": lambda m: eye_mouse.control_mouse.toggle(),
+        "zoom mouse": toggle_zoom_mouse,
+        "camera overlay": lambda m: eye_mouse.camera_overlay.toggle(),
+        "(click | chiff | pop | tap | tea)": click,
+        "run calibration": lambda m: eye_mouse.calib_start(),
+        "righty": right_click,
+        "(click | chiff)": click,
+        "(dubclick | duke)": dubclick,
+        "(tripclick | triplick)": tripclick,
+        "drag": mouse_drag,
+        "drag release": mouse_release,
+        # "control click": control_click,
+        # "shift click": shift_click,
+        #"(command click | chom lick)": command_click,
+        # "(control shift click | troll shift click)": control_shift_click,
+        # "(control shift double click | troll shift double click)": lambda m: control_shift_click(
+            # m, 0, 2
+        # ),
+        #"do park": [dubclick, Key("ctrl-v")],
+        #"do koosh": [dubclick, Key("ctrl-c")],
+        #"wheel down": mouse_smooth_scroll(250),
+        #"wheel up": mouse_smooth_scroll(-250),
+        #"wheel down here": [mouse_center, mouse_smooth_scroll(250)],
+        #"wheel up here": [mouse_center, mouse_smooth_scroll(-250)],
+        #"mouse center": mouse_center,
+    }
+)
 
-keymap = {
-    # jsc modified with some voice-code compatibility
-    "righty": right_click,
-    "(click | chiff)": click,
-    "(dubclick | duke)": dubclick,
-    "(tripclick | triplick)": tripclick,
-    "drag": mouse_drag,
-    "drag release": mouse_release,
-    "control click": control_click,
-    "shift click": shift_click,
-    #"(command click | chom lick)": command_click,
-    "(control shift click | troll shift click)": control_shift_click,
-    "(control shift double click | troll shift double click)": lambda m: control_shift_click(
-        m, 0, 2
-    ),
-    "do park": [dubclick, Key("ctrl-v")],
-    "do koosh": [dubclick, Key("ctrl-c")],
-    #"wheel down": mouse_smooth_scroll(250),
-    #"wheel up": mouse_smooth_scroll(-250),
-    "wheel down here": [mouse_center, mouse_smooth_scroll(250)],
-    "wheel up here": [mouse_center, mouse_smooth_scroll(-250)],
-    "mouse center": mouse_center,
-}
-
-ctx.keymap(keymap)
