@@ -5,12 +5,12 @@ context = Context("1password")
 context.keymap(
     {
         # Global
-        "password fill": Key("cmd-\\"),
-        "password show": Key("alt-cmd-\\"),
+        "password fill": Key("ctrl-\\"),
+        "password show": Key("alt-ctrl-\\"),
         # App
-        "password new": Key("cmd-n"),
-        "password dup": Key("cmd-d"),
-        "password edit": Key("cmd-e"),
-        "password delete": Key("cmd-delete"),
+        "password new": Key("ctrl-n"),
+        "password dup": Key("ctrl-d"),
+        "password edit": Key("ctrl-e"),
+        "password delete": Key("ctrl-delete"),
     }
 )

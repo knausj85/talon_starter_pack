@@ -10,26 +10,22 @@ def jump_to_bol(m):
     Str(str(line))(None)
     press("enter")
 
-
 def jump_to_end_of_line():
-    press("cmd-right")
-
+    press("end")
 
 def jump_to_beginning_of_text():
-    press("cmd-left")
-
+    press("ctrl-home")
 
 def jump_to_nearly_end_of_line():
-    press("left")
-
+    press("end")
 
 def jump_to_bol_and(then):
     def fn(m):
-        if len(m._words) > 1:
+        if len(m) > 1:
             jump_to_bol(m)
         else:
-            press("ctrl-a")
-            press("cmd-left")
+            press("ctrl-home")
+            press("ctrl-left")
         then()
 
     return fn
@@ -37,21 +33,21 @@ def jump_to_bol_and(then):
 
 def jump_to_eol_and(then):
     def fn(m):
-        if len(m._words) > 1:
+        if len(m) > 1:
             jump_to_bol(m)
-        press("cmd-right")
+        press("end")
         then()
 
     return fn
 
 
 def toggle_comments(*unneeded):
-    press("cmd-/")
-
+    press("ctrl-q")
 
 def snipline():
-    press("ctrl-shift-k")
-
+    press("home")
+    press("shift-end")
+    press("ctrl-x")
 
 def get_first_word(m):
     return m.dgndictation.words[0]
@@ -59,7 +55,6 @@ def get_first_word(m):
 def jump_to(m):
     target = get_first_word(m)
     jump_to_target(target)
-
 
 keymap = {
     "(trundle | comment)": toggle_comments,
@@ -72,32 +67,31 @@ keymap = {
     "dear" + optional_numerals(): jump_to_eol_and(lambda: None),
     "smear" + optional_numerals(): jump_to_eol_and(jump_to_nearly_end_of_line),
     # general
-    "fullscreen": Key("ctrl-cmd-f"),
     # file
     # "new": Key("cmd-n"),
-    "(save | safe)": Key("cmd-s"),
-    "close (file | tab)": Key("cmd-w"),
+    "(save | safe)": Key("ctrl-s"),
+    "close (file | tab)": Key("ctrl-w"),
     # selection
-    "(select | cell) up": Key("shift-up"),
-    "(select | cell) down": Key("shift-down"),
-    "(select | cell) all": Key("cmd-a"),
-    "(select | cell) bottom ": Key("cmd-shift-down"),
-    "(select | cell) right": Key("shift-right"),
-    "(select | cell) left": Key("shift-left"),
-    "(select | cell) word": Key("shift-alt-left"),
-    "(select | cell) (end | push)": Key("cmd-shift-right"),
-    "(select | cell) (start | begin | pop)": Key("cmd-shift-left"),
+    # "(select | cell) up": Key("shift-up"),
+    # "(select | cell) down": Key("shift-down"),
+    # "(select | cell) all": Key("cmd-a"),
+    # "(select | cell) bottom ": Key("cmd-shift-down"),
+    # "(select | cell) right": Key("shift-right"),
+    # "(select | cell) left": Key("shift-left"),
+    # "(select | cell) word": Key("shift-alt-left"),
+    # "(select | cell) (end | push)": Key("cmd-shift-right"),
+    # "(select | cell) (start | begin | pop)": Key("cmd-shift-left"),
     # edit
-    "paste match": Key("cmd-shift-v"),
-    "shove": Key("cmd-]"),
-    "tug": Key("cmd-["),
-    "(scrap | scratch | delete) word": Key("alt-backspace"),
-    "(scrap | scratch | delete) (begin | start)": Key("cmd-backspace"),
+    #"paste match": Key("cmd-shift-v"),
+    #"shove": Key("cmd-]"),
+    #"tug": Key("cmd-["),
+    "(scrap | scratch | delete) word": Key("ctrl-backspace"),
+    "(scrap | scratch | delete) (begin | start)": Key("ctrl-shift-l"),
     # navigation
-    "push": Key("cmd-right"),
-    "pop": Key("cmd-left"),
-    "step": Key("alt-right"),
-    "stone": Key("alt-left"),
+    #"push": Key("cmd-right"),
+    #"pop": Key("cmd-left"),
+    #"step": Key("alt-right"),
+    #"stone": Key("alt-left"),
     "jump to <dgndictation>": jump_to,
 }
 
