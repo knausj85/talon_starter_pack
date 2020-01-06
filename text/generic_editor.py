@@ -1,11 +1,11 @@
 from talon.voice import Key, press, Str, Context
-from ..utils import parse_word, numerals, optional_numerals, text_to_number, jump_to_target
+from ..utils import parse_word, numerals, optional_numerals, text_to_number, jump_to_target, parse_words_as_integer
 
 ctx = Context("generic_editor")
 
 # actions and helper functions
 def jump_to_bol(m):
-    line = text_to_number(m)
+    line = parse_words_as_integer(m)
     press("ctrl-g")
     Str(str(line))(None)
     press("enter")
@@ -30,7 +30,6 @@ def jump_to_bol_and(then):
 
     return fn
 
-
 def jump_to_eol_and(then):
     def fn(m):
         if len(m) > 1:
@@ -39,7 +38,6 @@ def jump_to_eol_and(then):
         then()
 
     return fn
-
 
 def toggle_comments(*unneeded):
     press("ctrl-q")
@@ -50,7 +48,7 @@ def snipline():
     press("ctrl-x")
 
 def get_first_word(m):
-    return m.dgndictation.words[0]
+    return m[0]
 
 def jump_to(m):
     target = get_first_word(m)
@@ -58,14 +56,13 @@ def jump_to(m):
 
 keymap = {
     "(trundle | comment)": toggle_comments,
-    "(trundle | comment)"
-    + numerals(): jump_to_bol_and(toggle_comments),  # noop for plain/text
-    "snipline" + optional_numerals(): jump_to_bol_and(snipline),
-    "sprinkle" + optional_numerals(): jump_to_bol,
-    "spring" + optional_numerals(): jump_to_eol_and(jump_to_beginning_of_text),
-    "sprinkoon" + numerals(): jump_to_eol_and(lambda: press("enter")),
-    "dear" + optional_numerals(): jump_to_eol_and(lambda: None),
-    "smear" + optional_numerals(): jump_to_eol_and(jump_to_nearly_end_of_line),
+    "(trundle | comment) <dgndictation>": jump_to_bol_and(toggle_comments),  # noop for plain/text
+    "snipline <dgndictation>": jump_to_bol_and(snipline),
+    "sprinkle <dgndictation>++ over": jump_to_bol,
+    "spring <dgndictation>": jump_to_eol_and(jump_to_beginning_of_text),
+    #"sprinkoon <dgndictation>": jump_to_eol_and(lambda: press("enter")),
+    "dear <dgndictation>++ over": jump_to_eol_and(lambda: None),
+    "smear <dgndictation>++ over": jump_to_eol_and(jump_to_nearly_end_of_line),
     # general
     # file
     # "new": Key("cmd-n"),

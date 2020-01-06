@@ -9,7 +9,7 @@ import time
 # overrides are used as a last resort to override the output. Some uses:
 # - frequently misheard words
 # - force homophone preference (alternate homophones can be accessed with homophones command)
-
+ 
 # To add an override, add the word to override as the key and desired replacement as value in overrides.json
 mapping = json.load(resource.open("overrides.json"))
 
@@ -18,7 +18,7 @@ punctuation = set(".,-!?")
 
 
 def remove_dragon_junk(word):
-    return str(word).lstrip("\\").split("\\", 1)[0]
+    return str(word).lstrip("\\").split("\\")[0]
 
 
 def parse_word(word):
@@ -80,6 +80,8 @@ def numeral_map():
     for n in [20, 30, 40, 50, 60, 70, 80, 90]:
         numeral_map[str(n)] = n
     numeral_map["oh"] = 0  # synonym for zero
+    numeral_map["for"] = 4
+    numeral_map["when"] = 1
     return numeral_map
 
 
@@ -91,24 +93,20 @@ def optional_numerals():
     return " (" + " | ".join(sorted(numeral_map().keys())) + ")*"
 
 
-def text_to_number(m):
-    tmp = [str(s).lower() for s in m]
-    words = [parse_word(word) for word in tmp]
-
+def text_to_number(m,start_index=0):
+    words = [str(s).lower() for s in m[start_index:]]
     result = 0
-    factor = 1
-    for word in reversed(words):
-        if word not in optional_numerals():
-            # we consumed all the numbers and only the command name is left.
-            break
-
-        result = result + factor * int(numeral_map()[word])
-        factor = 10 * factor
+    for word in words:
+        print("word = " + word)
+        try:
+            result = result + int(word)
+        except ValueError:
+            result = result
 
     return result
 
 
-number_conversions = {"oh": "0"}  # 'oh' => zero
+number_conversions = {"oh": "0", "for": "4", "when": "1", "want": "1"}  # 'oh' => zero
 for i, w in enumerate(
     ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 ):
@@ -116,37 +114,30 @@ for i, w in enumerate(
     number_conversions[w] = str(i)
     number_conversions["%s\\number" % (w)] = str(i)
 
-
-def parse_words_as_integer(words):
-    # TODO: Once implemented, use number input value rather than manually
-    # parsing number words with this function
-
-    # Ignore any potential non-number words
-    number_words = [w for w in words if str(w) in number_conversions]
-
-    # Somehow, no numbers were detected
-    if len(number_words) == 0:
-        return None
-
-    # Map number words to simple number values
-    number_values = list(map(lambda w: number_conversions[w.word], number_words))
-
-    # Filter out initial zero values
-    normalized_number_values = []
-    non_zero_found = False
-    for n in number_values:
-        if not non_zero_found and n == "0":
-            continue
-        non_zero_found = True
-        normalized_number_values.append(n)
-
-    # If the entire sequence was zeros, return single zero
-    if len(normalized_number_values) == 0:
-        normalized_number_values = ["0"]
-
-    # Create merged number string and convert to int
-    return int("".join(normalized_number_values))
-
+def parse_words_as_integer(m):
+    number_list = []
+    
+    #quick and dirty due to being a python number.
+    #join the string together, and stript out unneeded garbage
+    s = " ".join(m).replace("\\number", "").replace("over", "").lstrip().rstrip();
+    
+    splits = s.split(" ")
+    for split in splits:
+        string_to_add = split.lstrip().rstrip()
+        if string_to_add in number_conversions:
+            number_list.append(number_conversions[string_to_add])
+            
+    #reverse the list
+    number_list.reverse()
+    
+    #calculate the value
+    result = 0
+    place = 1
+    for number in number_list:
+        result = result + int(number) * place
+        place = place * 10
+        
+    return result
 
 def is_in_bundles(bundles): 
     return lambda app, win: any(b in app.bundle for b in bundles)
