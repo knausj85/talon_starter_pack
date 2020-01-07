@@ -40,9 +40,8 @@ ctx.set_list("ordinals", ordinals.keys())
 
 def repeat(m):
     o = m.ordinals
-    repeater = Rep(int(ordinals[o]))
+    repeater = Rep(int(ordinals[o[-1]]))
     repeater.ctx = talon
     return repeater(None)
-
 
 ctx.keymap({"{repeater.ordinals}": repeat})
