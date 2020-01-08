@@ -1,14 +1,14 @@
 from talon.voice import Context, Key
 
-context = Context("GoogleChrome", bundle="com.google.Chrome")
+context = Context("GoogleChrome", exe="C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
 
 keymap = {
-    "(address bar | go address | go url)": Key("cmd-l"),
-    "go back[ward]": Key("cmd-["),
-    "forward": Key("cmd-]"),
-    "close [tab]": Key("cmd-w"),
-    "chrome (find | marco)": Key("cmd-f"),
-    "dev tools": Key("cmd-alt-i"),
+    "(address bar | go address | go url)": Key("ctrl-l"),
+    "go back[ward]": Key("alt-left"),
+    "forward": Key("alt-right"),
+    "close [tab]": Key("ctrl-w"),
+    "chrome (find | marco)": Key("ctrl-f"),
+    "dev tools": Key("ctrl-alt-i"),
     # navigating current page
     "help": Key("?"),
     "scroll tiny down": Key("j"),
@@ -25,7 +25,7 @@ keymap = {
     "[open] link new": Key("F"),
     "copy link": Key("y f"),
     "copy (address | url)": Key("escape y y"),
-    "(refresh | reload)": Key("cmd-r"),
+    "(refresh | reload)": Key("ctrl-r"),
     "view source": Key("g s"),
     "insert mode": Key("i"),
     "next frame": Key("g f"),
