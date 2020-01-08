@@ -1,8 +1,11 @@
 # From https://github.com/talonvoice/examples
 import time
-from talon import ctrl, tap, ui
+from talon import ctrl, tap, ui, noise
 from talon.voice import Context, Key
 from talon_plugins import eye_mouse, eye_zoom_mouse
+import win32gui 
+import win32con
+import os
 
 ctx = Context("mouse")
 
@@ -26,14 +29,18 @@ def on_move(typ, e):
         e.x, e.y = force_move
         return True
 
+def on_pop(m):
+    if not eye_zoom_mouse.zoom_mouse.enabled:
+        click("")
+        
+noise.register('pop', on_pop)
+# tap.register(tap.MMOVE, on_move)
 
-tap.register(tap.MMOVE, on_move)
-
-def click_pos(m):
-    word = m[0]
-    start = (word.start + min((word.end - word.start) / 2, 0.100)) / 1000.0
-    diff, pos = min([(abs(start - pos[2]), pos) for pos in mouse_history])
-    return pos[:2]
+# def click_pos(m):
+    # word = m[0]
+    # start = (word.start + min((word.end - word.start) / 2, 0.100)) / 1000.0
+    # diff, pos = min([(abs(start - pos[2]), pos) for pos in mouse_history])
+    # return pos[:2]
 
 def click(m, button=0, times=1):        
     do_clicks = eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_OVERLAY or not eye_zoom_mouse.zoom_mouse.enabled
@@ -85,21 +92,12 @@ def mouse_smooth_scroll(amount):
 
 
 def mouse_drag(m):
-    x, y = click_pos(m)
-    ctrl.mouse_click(x, y, down=True)
+    ctrl.mouse_click(down=True)
 
 
 def mouse_release(m):
-    x, y = click_pos(m)
-    ctrl.mouse_click(x, y, up=True)
+    ctrl.mouse_click(up=True)
 
-
-def mouse_center(m):
-    win = ui.active_window()
-    rect = win.rect
-    center = (rect.x + rect.width / 2, rect.y + rect.height / 2)
-    print(rect, center)
-    ctrl.mouse_move(*center)
 
 def shift_click(m, button=0, times=1):
     press_key_and_click(m, "shift", button, times)
@@ -127,7 +125,6 @@ ctx.keymap(
         "(click | chiff | pop | tap | tea)": click,
         "run calibration": lambda m: eye_mouse.calib_start(),
         "righty": right_click,
-        "(click | chiff)": click,
         "(dubclick | duke)": dubclick,
         "(tripclick | triplick)": tripclick,
         "drag": mouse_drag,
