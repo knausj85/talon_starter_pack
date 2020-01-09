@@ -42,28 +42,29 @@ noise.register('pop', on_pop)
     # diff, pos = min([(abs(start - pos[2]), pos) for pos in mouse_history])
     # return pos[:2]
 
-def click(m, button=0, times=1):        
-    do_clicks = eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_OVERLAY or not eye_zoom_mouse.zoom_mouse.enabled
-    call_on_pop = eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_IDLE
-    
-    #cancel zoom mouse if pending
+def click(m, button=0, repeat=1, force_zoom_when_zm_active=False):     
+    call_on_pop = force_zoom_when_zm_active and eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state == eye_zoom_mouse.STATE_IDLE
+
     if call_on_pop:
         eye_zoom_mouse.zoom_mouse.on_pop(eye_zoom_mouse.zoom_mouse.state)
-    elif do_clicks:
-        for n in range(times):
+    
+    else:
+        for n in range(repeat):
             ctrl.mouse_click(button=button)
-        
+            
+        #cancel zoom mouse if pending
         if eye_zoom_mouse.zoom_mouse.enabled:
             eye_zoom_mouse.zoom_mouse.cancel()
-            
+     
+     
 def right_click(m):
     click(m, button=1)
 
 def dubclick(m):
-    click(m, times=2)
+    click(m, repeat=2)
   
 def tripclick(m):
-    click(m, times=3)
+    click(m, repeat=3)
 
 def press_key_and_click(m, key, button=0, times=1):
     ctrl.key_press(key, down=True)
@@ -90,14 +91,14 @@ def mouse_smooth_scroll(amount):
             ctrl.mouse_scroll(y=amount)
     return scroll
 
-
+is_dragging = False
 def mouse_drag(m):
-    ctrl.mouse_click(down=True)
-
-
-def mouse_release(m):
-    ctrl.mouse_click(up=True)
-
+    global is_dragging 
+    is_dragging = not is_dragging
+    if is_dragging:
+       ctrl.mouse_click(down=True)
+    else:
+       ctrl.mouse_click(up=True)
 
 def shift_click(m, button=0, times=1):
     press_key_and_click(m, "shift", button, times)
@@ -122,13 +123,13 @@ ctx.keymap(
         "control mouse": lambda m: eye_mouse.control_mouse.toggle(),
         "zoom mouse": toggle_zoom_mouse,
         "camera overlay": lambda m: eye_mouse.camera_overlay.toggle(),
-        "(click | chiff | pop | tap | tea)": click,
+        "(click | chiff | pop | tap | tea)": lambda m: click(m, force_zoom_when_zm_active=True),
+        "(q-tip | cutey | q click)": lambda m: click(m, force_zoom_when_zm_active=False),
         "run calibration": lambda m: eye_mouse.calib_start(),
-        "righty": right_click,
+        "(righty | rickle)": right_click,
         "(dubclick | duke)": dubclick,
         "(tripclick | triplick)": tripclick,
         "drag": mouse_drag,
-        "drag release": mouse_release,
         # "control click": control_click,
         # "shift click": shift_click,
         #"(command click | chom lick)": command_click,
