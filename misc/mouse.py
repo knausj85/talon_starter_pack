@@ -52,10 +52,7 @@ def click(m, button=0, repeat=1, force_zoom_when_zm_active=False):
         for n in range(repeat):
             ctrl.mouse_click(button=button)
             
-        #cancel zoom mouse if pending
-        if eye_zoom_mouse.zoom_mouse.enabled:
-            eye_zoom_mouse.zoom_mouse.cancel()
-     
+        cancel_zoom_mouse()
      
 def right_click(m):
     click(m, button=1)
@@ -77,7 +74,6 @@ def mouse_scroll(amount):
 
     return scroll
 
-
 def mouse_smooth_scroll(amount):
     def scroll(m):
         if SCROLL_TOTAL_TIME != 0:
@@ -91,14 +87,24 @@ def mouse_smooth_scroll(amount):
             ctrl.mouse_scroll(y=amount)
     return scroll
 
+def cancel_zoom_mouse():
+    #cancel zoom mouse if pending
+    if eye_zoom_mouse.zoom_mouse.enabled and eye_zoom_mouse.zoom_mouse.state != eye_zoom_mouse.STATE_IDLE:
+        eye_zoom_mouse.zoom_mouse.cancel()
+
 is_dragging = False
-def mouse_drag(m):
+
+def mouse_drag(m): 
     global is_dragging 
     is_dragging = not is_dragging
+    
     if is_dragging:
        ctrl.mouse_click(down=True)
     else:
        ctrl.mouse_click(up=True)
+       
+    cancel_zoom_mouse()
+
 
 def shift_click(m, button=0, times=1):
     press_key_and_click(m, "shift", button, times)
