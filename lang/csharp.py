@@ -1,7 +1,7 @@
 from talon.voice import Context, Key
 from ..utils import is_filetype
 
-FILETYPES = (".cs")
+FILETYPES = ('.cs',)
 
 context = Context("csharp", func=is_filetype(FILETYPES))
 
@@ -14,9 +14,10 @@ context.keymap(
         "state if": "if ",
         "state while": ["while ()", Key("left")],
         "state for": "for ",
-        "state for each": "for each ",
+        "state for each": "foreach ",
         "state switch": ["switch ()", Key("left")],
         "state case": ["case ()\n{\n}\nbreak;", Key("up"), Key("up")],
+        "generic": ["<>", Key("left")],
         # "state goto": "goto ",
         # "state import": "import ",
         # "state class": "class ",
