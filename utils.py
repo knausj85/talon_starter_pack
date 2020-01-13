@@ -126,7 +126,6 @@ def parse_words_as_integer(m):
         string_to_add = split.lstrip().rstrip()
         if string_to_add in number_conversions:
             number_list.append(number_conversions[string_to_add])
-            
     #reverse the list
     number_list.reverse()
     
@@ -144,10 +143,12 @@ def is_in_bundles(bundles):
 
 def is_filetype(extensions=()):
     def matcher(app, win):
-        activeType = os.path.splitext(win.title)[-1]
+        activeType = os.path.splitext(win.title)[-1] 
         for ext in extensions:
-            if ext in activeType:
+            if ext in activeType or ext == activeType:
+                #print("{} is active, window = {}".format(ext, win.title))
                 return True
+        #print("{} is inactive, window = {}".format(ext, win.title))
         return False
         
     return matcher
