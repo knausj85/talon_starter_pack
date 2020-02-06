@@ -14,7 +14,7 @@ ctx.keymap({
     # moving
 
     # left, right, up and down already defined
-    'go word left': Key('ctrl-a'),
+    'go word left': Key('ctrl-left'),
     'go word right': Key('ctrl-right'),
 
     'go left': Key('left'),
