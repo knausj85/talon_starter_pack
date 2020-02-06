@@ -5,6 +5,7 @@ from .bundle_groups import FILETYPE_SENSITIVE_BUNDLES
 import json
 import os
 import time
+from talon_plugins import microphone
 
 # overrides are used as a last resort to override the output. Some uses:
 # - frequently misheard words
@@ -181,3 +182,12 @@ def jump_to_target(target):
     for i in range(0, len(target)):
         press("shift-right")
     press("right", wait=0)
+
+def use_mic(mic_name):
+    mic = microphone.manager.active_mic()
+    if mic is not None and mic.name == mic_name:
+        return
+    
+    mics = {i.name: i for i in list(microphone.manager.menu.items)}
+    if mic_name in mics:
+        microphone.manager.menu_click(mics[mic_name])

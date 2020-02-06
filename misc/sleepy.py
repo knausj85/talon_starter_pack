@@ -8,6 +8,7 @@ import ctypes
 import os
 import winreg
 import platform
+from ..utils import use_mic
 
 sleep_group = ContextGroup("sleepy")
 sleepy = Context("sleepy", group=sleep_group)
@@ -56,10 +57,12 @@ def wake_or_sleep(wake_up):
         eye_zoom_mouse.zoom_mouse.enable()
         eye_mouse.control_mouse.enable() 
         show_cursor(False)
+        #use_mic("Microphone (d:vice MMA-A)")
     else:
         eye_zoom_mouse.zoom_mouse.disable()
         eye_mouse.control_mouse.disable()
         engine.mimic("go to sleep".split())
+        #use_mic("None")
         show_cursor(True)
 
 sleepy.keymap( 
