@@ -9,7 +9,7 @@ keymap = {
     "switch tab": Key("ctrl-tab"),
     "next tab": Key("ctrl-pageup"),
     "open": Key("ctrl-o"),
-    "refresh", Key("ctrl-r"),
+    "refresh": Key("ctrl-r"),
 }
 
 ctx.keymap(keymap)

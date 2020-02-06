@@ -66,14 +66,8 @@ sleepy.keymap(
     {
         "talon sleep": lambda m: speech.set_enabled(False),
         "talon wake": lambda m: speech.set_enabled(True),
-        "dragon mode": [
-            lambda m: speech.set_enabled(False),
-            lambda m: engine.mimic("wake up".split()),
-        ],
-        "talon mode": [
-            lambda m: speech.set_enabled(True),
-            lambda m: engine.mimic("go to sleep".split()),
-        ],
+        "dragon mode": lambda m: speech.set_enabled(False),
+        "talon mode": lambda m: speech.set_enabled(True),
         "sleep all" : lambda m: wake_or_sleep(False),
         "welcome back": lambda m: wake_or_sleep(True),
         "curse yes": lambda m: show_cursor(True),

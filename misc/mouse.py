@@ -33,7 +33,7 @@ def on_pop(m):
     if not eye_zoom_mouse.zoom_mouse.enabled:
         click("")
         
-noise.register('pop', on_pop)
+#noise.register('pop', on_pop)
 # tap.register(tap.MMOVE, on_move)
 
 # def click_pos(m):
@@ -129,7 +129,7 @@ ctx.keymap(
         "control mouse": lambda m: eye_mouse.control_mouse.toggle(),
         "zoom mouse": toggle_zoom_mouse,
         "camera overlay": lambda m: eye_mouse.camera_overlay.toggle(),
-        "(click | chiff | pop | tap | tea)": lambda m: click(m, force_zoom_when_zm_active=True),
+        "(click | chiff | pop)": lambda m: click(m, force_zoom_when_zm_active=True),
         "(q-tip | cutey | q click)": lambda m: click(m, force_zoom_when_zm_active=False),
         "run calibration": lambda m: eye_mouse.calib_start(),
         "(righty | rickle)": right_click,

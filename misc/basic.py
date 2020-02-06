@@ -3,13 +3,14 @@ from talon.voice import Context, Str, press
 import string
 
 alpha_alt = "air bat cap drum each fine gust harp sit jury crunch look made near odd pit quench red sun trap urge vest whale plex yank zip".split()
-
 f_keys = {f"F {i}": f"f{i}" for i in range(1, 13)}
 # arrows are separated because 'up' has a high false positive rate
 arrows = ["left", "right", "up", "down"]
 simple_keys = ["tab", "escape", "enter", "space", "pageup", "pagedown", "home", "end"]
 alternate_keys = {"delete": "backspace", "forward delete": "delete"}
 symbols = {
+    "chat": "@",
+    "amp": "&",
     "back tick": "`",
     "comma": ",",
     "dot": ".",
@@ -28,12 +29,16 @@ symbols = {
     "minus": "-",
     "dash": "-",
     "equals": "=",
+    "left go": "<",
+    "right go": ">",
 }
+
 modifiers = {
     "control": "ctrl",
     "shift": "shift",
     "alt": "alt",
 }
+
 if app.platform == "mac":
     modifiers["command"] = "cmd"
     modifiers["option"] = "alt"
